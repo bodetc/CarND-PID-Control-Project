@@ -20,7 +20,16 @@ private:
   PID pid=PID(0.3, 0.0001, 6.0);
 
   bool reset = false;
-  double iteration = 0;
+  int iteration = 0;
+  int N_max=N_start;
+
+  // Accumulated error
+  double error = 0;
+
+  /**
+   * Handles the transistions between the various states of the controller
+   */
+  void handleModeTransition();
 
 public:
 

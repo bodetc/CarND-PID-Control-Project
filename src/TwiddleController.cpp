@@ -6,27 +6,33 @@
 #include "TwiddleController.h"
 
 void TwiddleController::update(double cte, double speed, double angle) {
-  reset=false;
+  reset = false;
   iteration++;
 
   std::cout << "Iteration " << iteration << std::endl;
 
   pid.update(cte);
+  error+=pid.getControlValue();
 
+  if (iteration >= N_max) {
+    handleModeTransition();
+  }
+}
+
+void TwiddleController::handleModeTransition() {
   switch (mode) {
     case starting:
-      if(iteration>=N_start) {
-        iteration=0;
-        mode=measuring;
-      }
+      mode = measuring;
+      N_max = N_measure;
+      reset = false;
+      break;
     case measuring:
-      if(iteration>=N_measure) {
-        // TODO: Update PID with new values
-
-        iteration=0;
-        mode=starting;
-        reset=true;
-      }
+      // TODO: Update PID with new values
+      mode = starting;
+      N_max = N_start;
+      reset = true;
       break;
   }
+  iteration = 0;
+  error = 0.;
 }
