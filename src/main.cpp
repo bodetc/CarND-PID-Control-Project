@@ -10,6 +10,7 @@
 using json = nlohmann::json;
 
 const double max_speed = 30.;
+const bool debug = false;
 
 void runWebSocket(Controller &steering_controller, Controller &throttle_controller);
 
@@ -72,7 +73,7 @@ void runWebSocket(Controller &steering_controller, Controller &throttle_controll
             double throttle_value = throttle_controller.getControl();
 
             // DEBUG
-            std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+            if(debug) std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
 
             json msgJson;
             msgJson["steering_angle"] = steer_value;
@@ -80,7 +81,7 @@ void runWebSocket(Controller &steering_controller, Controller &throttle_controll
             msg = "42[\"steer\"," + msgJson.dump() + "]";
           }
 
-          std::cout << msg << std::endl;
+          if(debug) std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
@@ -104,7 +105,7 @@ void runWebSocket(Controller &steering_controller, Controller &throttle_controll
   });
 
   h.onConnection([&h](uWS::WebSocket<uWS::SERVER> ws, uWS::HttpRequest req) {
-    std::cout << "Connected!!!" << std::endl;
+    if(debug) std::cout << "Connected!!!" << std::endl;
   });
 
   h.onDisconnection([&h](uWS::WebSocket<uWS::SERVER> ws, int code, char *message, size_t length) {

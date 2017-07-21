@@ -6,37 +6,64 @@
 #define PID_TWIDDLECONTROLLER_H
 
 
+#include <cfloat>
 #include "PID.h"
 #include "Controller.h"
 
 class TwiddleController : public Controller {
 private:
-  enum Mode { starting, measuring };
+  enum Mode {
+    starting, measuring
+  };
 
   const int N_start = 100;
-  const int N_measure = 500;
+  const int N_measure = 5000;
 
-  Mode mode=starting;
-  PID pid=PID(0.3, 0.0001, 6.0);
+  // Simulation status
+  bool reset = false; // Should the simulation be reset
+  Mode mode = starting; // Current mode
+  int iteration = 0;  // Number of iterations in the current mode
+  int N_max = N_start;  // Number of iterations to reach in the current mode
 
-  bool reset = false;
-  int iteration = 0;
-  int N_max=N_start;
+  // The PID Controller itself
+  PID *pid= nullptr;
 
   // Accumulated error
   double error = 0;
+
+  // Twiddle parameters
+  double p[3] = {0.3, 0., 6.};
+  double dp[3] = {0.15, 0.0001, 3.};
+
+  double best_error = DBL_MAX;
+
+  bool firstTwiddleRun = false;
+
+  int n_twiddle = 0;
+  int twiddle_index = 2;
+
+  const int N_twiddle = 10000;
 
   /**
    * Handles the transistions between the various states of the controller
    */
   void handleModeTransition();
 
+  void twiddleUpdate();
+
+  void printPValues();
+
+  void createPID();
 public:
+
+  TwiddleController();
+
+  virtual ~TwiddleController();
 
   virtual void update(double cte, double speed, double angle);
 
   inline double getControl() {
-    return pid.getControlValue();
+    return pid->getControlValue();
   }
 
   inline virtual bool isReset() {
