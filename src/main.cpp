@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "PID.h"
 #include "SimpleController.h"
+#include "TwiddleController.h"
 #include <math.h>
 
 // for convenience
@@ -12,8 +13,15 @@ const double max_speed = 30.;
 
 void runWebSocket(Controller &steering_controller, Controller &throttle_controller);
 
-int main() {
+void runNaiveController() {
   SimpleController steering_controller = SimpleController(SimpleController::Type::cte, 0.3, 0.0001, 6.0);
+  SimpleController throttle_controller = SimpleController(SimpleController::Type::speed, 1., 0., 0., max_speed);
+
+  runWebSocket(steering_controller, throttle_controller);
+}
+
+int main() {
+  TwiddleController steering_controller = TwiddleController();
   SimpleController throttle_controller = SimpleController(SimpleController::Type::speed, 1., 0., 0., max_speed);
 
   runWebSocket(steering_controller, throttle_controller);
@@ -58,7 +66,7 @@ void runWebSocket(Controller &steering_controller, Controller &throttle_controll
 
           std::string msg;
           if (steering_controller.isReset() || throttle_controller.isReset()) {
-
+            msg = "42[\"reset\",{}]";
           } else {
             double steer_value = steering_controller.getControl();
             double throttle_value = throttle_controller.getControl();
