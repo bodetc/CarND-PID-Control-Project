@@ -2,7 +2,7 @@
 #define PID_H
 
 class PID {
-public:
+private:
 
   /*
    * Coefficients
@@ -17,6 +17,10 @@ public:
   double previous_cte;
   double sum_cte;
 
+  double control_value;
+
+public:
+
   /*
   * Constructor
   */
@@ -27,10 +31,17 @@ public:
   */
   virtual ~PID() {};
 
-  /*
-   * Update the PID error variables given cross track error and returns the next control value
+  /**
+   * Update the PID error variables given cross track error
    */
-  double UpdateErrorAndGetNewControl(double cte);
+  void update(double value);
+
+  /**
+   * returns the next control value
+   */
+  inline double getControlValue() const {
+    return control_value;
+  };
 };
 
 #endif /* PID_H */
