@@ -9,7 +9,7 @@
 #include "Controller.h"
 #include "PID.h"
 
-class SimpleController : public Controller {
+class PIDController : public Controller {
 public:
   enum Type { cte, speed, angle };
 
@@ -21,9 +21,9 @@ private:
 
 public:
 
-  SimpleController(Type type_, double Kp_, double Ki_, double Kd_, double targetValue_);
+  PIDController(Type type_, double Kp_, double Ki_, double Kd_, double targetValue_);
 
-  SimpleController(Type type_, double Kp_, double Ki_, double Kd_) : SimpleController(type_, Kp_, Ki_, Kd_, 0.) {}
+  PIDController(Type type_, double Kp_, double Ki_, double Kd_) : PIDController(type_, Kp_, Ki_, Kd_, 0.) {}
 
   virtual void update(double cte, double speed, double angle);
 
