@@ -3,6 +3,7 @@
 #include "json.hpp"
 #include "PID.h"
 #include "PIDController.h"
+#include "ThrottleController.h"
 #include <math.h>
 
 // for convenience
@@ -16,13 +17,28 @@ std::string hasData(std::string s);
 
 void runWebSocket(Controller &steering_controller, Controller &throttle_controller);
 
-int main() {
-  const double max_speed = 25.;
+int main(int argc, char *argv[]) {
+  if (argc!=2) {
+    std::cout << "Running in low speed mode" << std::endl;
+    const double targetSpeed = 25.;
 
-  PIDController steering_controller = PIDController(PIDController::Type::cte, 0.3, 0.0002, 10.);
-  PIDController throttle_controller = PIDController(PIDController::Type::speed, 1., 0., 0., max_speed);
+    PIDController steering_controller = PIDController(PIDController::Type::cte, 0.3, 0.0002, 10.);
+    PIDController throttle_controller = PIDController(PIDController::Type::speed, 1., 0., 0., targetSpeed);
 
-  runWebSocket(steering_controller, throttle_controller);
+    runWebSocket(steering_controller, throttle_controller);
+
+  } else if (std::string("fast") == argv[1]) {
+    std::cout << "Running in high speed mode" << std::endl;
+    const double maxSpeed = 55.;
+
+    PIDController steering_controller = PIDController(PIDController::Type::cte, 0.4, 0.0004, 20.);
+    ThrottleController throttle_controller = ThrottleController(1., maxSpeed);
+
+    runWebSocket(steering_controller, throttle_controller);
+  } else {
+    std::cout << "Unknown arguments passed..." << std::endl;
+    std::cout << "Run with 'fast' or without arguments" << std::endl;
+  }
 }
 
 void runWebSocket(Controller &steering_controller, Controller &throttle_controller) {

@@ -7,7 +7,7 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS "${CXX_FLAGS}")
 
-set(sources src/PID.cpp src/main.cpp src/Controller.h src/PIDController.cpp src/PIDController.h)
+set(sources src/PID.cpp src/main.cpp src/Controller.h src/PIDController.cpp src/PIDController.h src/ThrottleController.cpp src/ThrottleController.h)
 
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
